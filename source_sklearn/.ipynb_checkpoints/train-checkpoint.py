@@ -41,7 +41,8 @@ if __name__ == '__main__':
     parser.add_argument('--data-dir', type=str, default=os.environ['SM_CHANNEL_TRAIN'])
     
     ## TODO: Add any additional arguments that you will need to pass into your model
-    parser.add_argument('--estimators', type=int, default=50)
+    parser.add_argument('--n_estimators', type=int, default=50)
+    parser.add_argument('--learning_rate', type=float, default=0.001)
     
     # args holds all passed-in arguments
     args = parser.parse_args()
@@ -55,13 +56,35 @@ if __name__ == '__main__':
     train_x = train_data.iloc[:,1:]
     
     ## --- Your code here --- ##
+    
+    # shuffle the dataset
+    train_x = train_x.sample(frac=1)    
+    
+    # scale the data and split into training and validation data
+    scaler = MinMaxScaler()
+    train_x = scaler.fit_transform(train_x.to_numpy())
+    
+    # split into training and validation set for cross validation
+    train_ratio = 0.8
+    train_size = int(train_x.shape[0] * train_ratio)
+
+    # get the validation data
+    val_x = train_x[train_size:, :]
+    val_y = train_y[train_size:]
+
+    # get the training data
+    train_x = train_x[:train_size, :]
+    train_y = train_y[:train_size]
 
     ## TODO: Define a model 
-    model = AdaBoostClassifier(n_estimators=args.estimators)
+    model = AdaBoostClassifier(n_estimators=args.n_estimators, learning_rate=args.learning_rate)
     
     ## TODO: Train the model
     model.fit(train_x, train_y)
         
+    # print the accuracy for hyperparam tuning
+    print('accuracy = {};'.format(model.score(val_x, val_y)))        
+    
     ## --- End of your code  --- ##
     
     # Save the trained model
