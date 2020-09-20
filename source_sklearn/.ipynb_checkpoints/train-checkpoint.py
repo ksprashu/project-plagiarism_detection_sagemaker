@@ -5,7 +5,7 @@ import os
 import pandas as pd
 import numpy as np
 
-import joblib
+from sklearn.externals import joblib
 
 ## TODO: Import any additional libraries you need to define a model
 from sklearn.preprocessing import MinMaxScaler

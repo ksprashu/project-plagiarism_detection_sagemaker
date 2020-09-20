@@ -3,6 +3,7 @@ import json
 import os
 import pandas as pd
 import torch
+import torch.nn as nn
 import torch.optim as optim
 import torch.utils.data
 
@@ -89,6 +90,8 @@ def train(model, train_loader, epochs, criterion, optimizer, device):
             total_loss += loss.data.item()
 
         print("Epoch: {}, Loss: {}".format(epoch, total_loss / len(train_loader)))
+        
+    print("Final-Loss = {};".format(total_loss / len(train_loader)))
 
 
 ## TODO: Complete the main code
@@ -113,14 +116,14 @@ if __name__ == '__main__':
                         help='number of epochs to train (default: 10)')
     parser.add_argument('--seed', type=int, default=1, metavar='S',
                         help='random seed (default: 1)')
-    parser.add_argument('--learning-rate', type=float, default=0.0001, metavar='LR',
+    parser.add_argument('--learning_rate', type=float, default=0.0001, metavar='LR',
                         help='learning rate (default: 0.0001)')
     
     ## TODO: Add args for the three model parameters: input_features, hidden_dim, output_dim
     # Model Parameters
-    parser.add_arguments('--input_features', type=int, help='number of dimensions in input data')
-    parser.add_arguments('--hidden_dim', type=int, default=10, help='dimension of hidden layer')
-    parser.add_arguments('--output_dim', type=int, default=1, help='dimension of output')
+    parser.add_argument('--input_features', type=int, help='number of dimensions in input data')
+    parser.add_argument('--hidden_dim', type=int, default=10, help='dimension of hidden layer')
+    parser.add_argument('--output_dim', type=int, default=1, help='dimension of output')
     
     # args holds all passed-in arguments
     args = parser.parse_args()
@@ -142,7 +145,7 @@ if __name__ == '__main__':
     model = BinaryClassifier(args.input_features, args.hidden_dim, args.output_dim)
 
     ## TODO: Define an optimizer and loss function for training
-    optimizer = optim.Adam(model.parameters(), lr=args.LR)
+    optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
     criterion = nn.BCELoss()
 
     # Trains the model (given line of code, which calls the above training function)
